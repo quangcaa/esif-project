@@ -8,12 +8,7 @@ def to_gray(img):
     return img
 
 def calc_psnr(img_ref, img_test, device):
-    # create metric
-    iqa_metric = pyiqa.create_metric('psnry', device=device)
-    print("Lower better : {}".format(iqa_metric.lower_better))
+    iqa_metric = pyiqa.create_metric('psnry', device=device) # higher better
 
-    # convert to tensor (grayscale)
-    img_tensor = torch.from_numpy(img_test).unsqueeze(0).unsqueeze(0).float() / 255.0
-
-    return iqa_metric(img_tensor, img_ref)
+    return iqa_metric(img_test, img_ref)
 
