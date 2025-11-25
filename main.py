@@ -16,7 +16,7 @@ import shutil
 def main():
     parser = argparse.ArgumentParser(description="ESIF")
     parser.add_argument("input", help="input image path")
-    # parser.add_argument("output", help="output image path")
+    parser.add_argument("output", help="output image path")
     parser.add_argument("--k", type=float, default=0.8, help="edge sensitivity")
     parser.add_argument("--crop", default=None, help="crop: x,y,w,h")
     args = parser.parse_args()
@@ -40,7 +40,7 @@ def main():
     nearest = cv2.resize(img_lr, (w, h), interpolation=cv2.INTER_NEAREST)
     bilinear = cv2.resize(img_lr, (w, h), interpolation=cv2.INTER_LINEAR)
     bicubic = cv2.resize(img_lr, (w, h), interpolation=cv2.INTER_CUBIC)
-    esif_img = esif.upscale_2x_edge_preserving(img_lr, k=args.k)
+    esif_img = esif.esif_upscale_2x(img_lr, k=args.k)
     nedi_img = nedi.EDI_predict(img_lr, 4, 2)
 
     # ===== SAVE RESULT IMAGES =====
@@ -77,31 +77,28 @@ def main():
         f"===== EPI⬆️ =====\nNearest: {epi1}\nBilinear: {epi2}\nBicubic: {epi3}\nESIF: {epi4}\nNEDI: {epi5}")
 
     # === GMSD ===
-    gmsd1 = iqa_gmsd.calc_gmsd(args.input, "results/nearest.png", device)
-    gmsd2 = iqa_gmsd.calc_gmsd(args.input, "results/bilinear.png", device)
-    gmsd3 = iqa_gmsd.calc_gmsd(args.input, "results/bicubic.png", device)
-    gmsd4 = iqa_gmsd.calc_gmsd(args.input, "results/esif.png", device)
-    gmsd5 = iqa_gmsd.calc_gmsd(args.input, "results/nedi.png", device)
-    print(
-        f"===== GMSD⬇️  =====\nNearest: {gmsd1.item()}\nBilinear: {gmsd2.item()}\nBicubic: {gmsd3.item()}\nESIF: {gmsd4.item()}\nNEDI: {gmsd5.item()}")
+    # gmsd1 = iqa_gmsd.calc_gmsd(args.input, "results/nearest.png", device)
+    # gmsd2 = iqa_gmsd.calc_gmsd(args.input, "results/bilinear.png", device)
+    # gmsd3 = iqa_gmsd.calc_gmsd(args.input, "results/bicubic.png", device)
+    # gmsd4 = iqa_gmsd.calc_gmsd(args.input, "results/esif.png", device)
+    # gmsd5 = iqa_gmsd.calc_gmsd(args.input, "results/nedi.png", device)
+    # print(
+    #     f"===== GMSD⬇️  =====\nNearest: {gmsd1.item()}\nBilinear: {gmsd2.item()}\nBicubic: {gmsd3.item()}\nESIF: {gmsd4.item()}\nNEDI: {gmsd5.item()}")
 
     # ===== VISUALIZATION =====
-    fig, ax = plt.subplots(2, 3, figsize=(10, 6))
-    ax[0, 0].imshow(img, cmap='gray')
-    ax[0, 0].set_title("Origin")
-    ax[0, 1].imshow(nearest, cmap='gray')
-    ax[0, 1].set_title("Nearest")
-    ax[0, 2].imshow(bicubic, cmap='gray')
-    ax[0, 2].set_title("Bicubic")
-    ax[1, 0].imshow(bicubic, cmap='gray')
-    ax[1, 0].set_title("Bicubic")
-    ax[1, 1].imshow(esif_img, cmap='gray')
-    ax[1, 1].set_title("ESIF")
-    ax[1, 2].imshow(nedi_img, cmap='gray')
-    ax[1, 2].set_title("NEDI")
+    images = [nearest, bilinear, bicubic, esif_img]
+    labels = ["Nearest", "Bilinear", "Bicubic", "ESIF"]
 
-    for a in ax.ravel(): a.axis('off')
+    num_images = len(images)
+    fig, axes = plt.subplots(1, num_images, figsize=(3 * num_images, 4))
+
+    for ax, im, label in zip(axes, images, labels):
+        ax.imshow(im, cmap='gray')
+        ax.set_title(label, fontsize=16)
+        ax.axis('off')
+
     plt.tight_layout()
+    plt.savefig(os.path.join(args.output, "h.png"), dpi=300)
     plt.show()
 
 

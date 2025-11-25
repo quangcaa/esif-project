@@ -1,0 +1,45 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+*.env
+
+# Conda
+conda-meta/
+*.conda
+*.lock
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# ---- Logs ----
+*.log
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+
+# ---- Build ----
+build/
+dist/
+*.egg-info/
+
+# ---- OS files ----
+.DS_Store
+Thumbs.db
+
+# ---- Cache ----
+.cache/
+__pycache__/
+
+create_image_doc.py
+
